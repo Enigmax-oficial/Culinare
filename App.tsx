@@ -33,6 +33,22 @@ export default function App() {
   const [submittingRecipe, setSubmittingRecipe] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  // Função para sincronizar hash com estado
+  const syncHashWithView = (hash: string = window.location.hash) => {
+    if (hash.startsWith('#recipe/')) {
+      const recipeId = hash.substring(8);
+      setSelectedRecipeId(recipeId);
+      setView('recipe');
+    } else if (hash === '#profile') {
+      setView('profile');
+    } else if (hash === '#playlists') {
+      setView('playlists');
+    } else {
+      setView('home');
+      setSelectedRecipeId(null);
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       const data = await api.getRecipes();
@@ -49,26 +65,27 @@ export default function App() {
         }
       }
       
-      // Verificar URL hash para navegação
-      const hash = window.location.hash;
-      if (hash.startsWith('#recipe/')) {
-        const recipeId = hash.substring(8);
-        setSelectedRecipeId(recipeId);
-        setView('recipe');
-      } else if (hash === '#profile') {
-        setView('profile');
-      } else if (hash === '#playlists') {
-        setView('playlists');
-      }
-      
+      // Sincronizar com hash atual
+      syncHashWithView();
       setLoading(false);
     };
     init();
   }, []);
 
+  // Listener para mudanças de hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      syncHashWithView();
+      window.scrollTo(0, 0);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const handleFilter = (cat: string | null) => {
     setActiveCategory(cat);
-    setView('home');
+    setSelectedRecipeId(null);
     window.location.hash = '';
     if (!cat) {
       setFilteredRecipes(recipes);
@@ -80,10 +97,7 @@ export default function App() {
   };
 
   const handleSelectRecipe = (id: string) => {
-    setSelectedRecipeId(id);
-    setView('recipe');
     window.location.hash = `recipe/${id}`;
-    window.scrollTo(0, 0);
   };
 
   const handleLoginSuccess = (newUser: User) => {
