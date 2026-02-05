@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { X, Plus, Trash2, Save, ChefHat, Image as ImageIcon } from 'lucide-react';
+import { X, Plus, Trash2, Save, ChefHat, Image as ImageIcon, Sparkles, Loader2, Wand2 } from 'lucide-react';
 import { Recipe, Ingredient, Step } from '../types';
+import { generateRecipeImage } from '../services/ai';
 
 interface CreateRecipeProps {
   onClose: () => void;
@@ -21,6 +22,7 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onClose, onSave, loa
     image: '',
   });
 
+  const [generatingImage, setGeneratingImage] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>([{ name: '', amount: 1, unit: 'unid.' }]);
   const [steps, setSteps] = useState<Step[]>([{ title: 'Preparo', text: '' }]);
 
@@ -29,6 +31,26 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onClose, onSave, loa
 
   const addStep = () => setSteps([...steps, { title: `Passo ${steps.length + 1}`, text: '' }]);
   const removeStep = (idx: number) => setSteps(steps.filter((_, i) => i !== idx));
+
+  const handleGenerateAIImage = async () => {
+    if (!formData.title) {
+      alert("Por favor, dê um título à sua receita antes de gerar a imagem.");
+      return;
+    }
+    setGeneratingImage(true);
+    try {
+      const generatedUrl = await generateRecipeImage(formData.title, formData.description);
+      if (generatedUrl) {
+        setFormData({ ...formData, image: generatedUrl });
+      } else {
+        alert("Não foi possível gerar a imagem no momento. Tente novamente.");
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,14 +89,49 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onClose, onSave, loa
                 <textarea rows={3} placeholder="Conte um pouco sobre essa delícia..." className="w-full bg-stone-50 border border-stone-100 rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-medium" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
               </div>
             </div>
+            
             <div className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Link da Imagem</label>
-                <div className="relative">
-                  <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={18} />
-                  <input required type="url" placeholder="https://..." className="w-full bg-stone-50 border border-stone-100 rounded-2xl pl-12 pr-4 py-4 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-medium" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
+                <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 flex justify-between items-center">
+                  Capa da Receita
+                  <span className="text-[9px] font-bold text-orange-500">URL ou Gerada por IA</span>
+                </label>
+                
+                <div className="space-y-3">
+                  <div className="relative group">
+                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300" size={18} />
+                    <input required type="text" placeholder="Cole o link da imagem ou gere com IA" className="w-full bg-stone-50 border border-stone-100 rounded-2xl pl-12 pr-4 py-4 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-medium" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
+                  </div>
+
+                  <button 
+                    type="button" 
+                    onClick={handleGenerateAIImage}
+                    disabled={generatingImage || !formData.title}
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white p-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3 overflow-hidden relative group"
+                  >
+                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    {generatingImage ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" /> Gerando Imagem Gourmet...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={16} /> Gerar Imagem com IA
+                      </>
+                    )}
+                  </button>
+
+                  {formData.image && (
+                    <div className="relative aspect-video rounded-2xl overflow-hidden border-2 border-stone-100 bg-stone-50 group">
+                      <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-white text-[10px] font-black uppercase tracking-widest">Pré-visualização</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+
               <div className="grid grid-cols-3 gap-4">
                  <div>
                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Categoria</label>
@@ -109,7 +166,7 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onClose, onSave, loa
             <div className="space-y-4">
               {ingredients.map((ing, idx) => (
                 <div key={idx} className="flex gap-4 items-center">
-                  <input placeholder="Qtd" type="number" className="w-20 bg-stone-50 border border-stone-100 rounded-xl px-4 py-3 font-bold text-center" value={ing.amount} onChange={e => {
+                  <input placeholder="Qtd" type="number" step="0.1" className="w-20 bg-stone-50 border border-stone-100 rounded-xl px-4 py-3 font-bold text-center" value={ing.amount} onChange={e => {
                     const newIng = [...ingredients];
                     newIng[idx].amount = Number(e.target.value);
                     setIngredients(newIng);
@@ -161,10 +218,10 @@ export const CreateRecipe: React.FC<CreateRecipeProps> = ({ onClose, onSave, loa
         <div className="p-8 bg-stone-50 border-t border-stone-100 flex justify-end gap-4">
           <button onClick={onClose} className="px-8 py-4 text-stone-500 font-black text-sm uppercase">Cancelar</button>
           <button 
-            onClick={handleSubmit} disabled={loading}
-            className="bg-orange-500 text-white px-12 py-4 rounded-2xl font-black text-sm uppercase shadow-xl hover:bg-orange-600 transition-all flex items-center gap-2"
+            onClick={handleSubmit} disabled={loading || generatingImage}
+            className="bg-orange-500 text-white px-12 py-4 rounded-2xl font-black text-sm uppercase shadow-xl hover:bg-orange-600 transition-all flex items-center gap-2 disabled:bg-stone-300"
           >
-            {loading ? <Plus className="animate-spin" /> : <Save size={18} />}
+            {loading ? <Loader2 className="animate-spin" /> : <Save size={18} />}
             Salvar na Minha Coleção
           </button>
         </div>

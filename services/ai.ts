@@ -21,3 +21,34 @@ export const getChefAdvice = async (recipeTitle: string, question: string) => {
     return "Desculpe, o Chef está ocupado no momento. Tente novamente mais tarde!";
   }
 };
+
+/**
+ * Gera uma imagem apetitosa para a receita baseada no título e descrição.
+ */
+export const generateRecipeImage = async (title: string, description: string) => {
+  try {
+    const prompt = `Uma fotografia profissional de gastronomia, estilo gourmet, do prato: "${title}". Descrição: ${description}. Iluminação de estúdio, alta resolução, 4k, apetitoso, fundo desfocado, apresentação impecável.`;
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: { parts: [{ text: prompt }] },
+      config: {
+        imageConfig: {
+          aspectRatio: "16:9"
+        }
+      }
+    });
+
+    if (response.candidates && response.candidates[0].content.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Erro na geração de imagem:", error);
+    return null;
+  }
+};

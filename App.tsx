@@ -210,39 +210,6 @@ export default function App() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]"></div>
 
         <div className="max-w-7xl mx-auto px-4 relative">
-          {/* Nova Badge Ultra-Premium de Armazenamento Local */}
-          <div className="absolute top-0 left-4 -mt-14 z-30">
-            <div className="group flex items-center gap-5 px-8 py-6 rounded-[35px] bg-black/80 backdrop-blur-3xl border border-white/10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] transition-all duration-700 hover:scale-[1.02] hover:border-green-500/50 hover:shadow-green-500/20">
-              <div className="relative flex items-center justify-center">
-                <div className="absolute w-12 h-12 bg-green-500/10 rounded-full animate-ping opacity-30"></div>
-                <div className="absolute w-8 h-8 bg-green-500/20 rounded-full animate-pulse opacity-50"></div>
-                <div className="relative w-4 h-4 bg-green-500 rounded-full shadow-[0_0_25px_rgba(34,197,94,1)] border-[3px] border-white/10"></div>
-              </div>
-              
-              <div className="flex flex-col border-l-2 border-white/10 pl-6">
-                <span className="text-[13px] font-black text-white uppercase tracking-[0.35em] leading-none mb-2 drop-shadow-lg">
-                  Armazenamento Local Ativo
-                </span>
-                <div className="flex items-center gap-2.5">
-                  <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-md border border-white/5">
-                    <Lock size={10} className="text-green-500" />
-                    <span className="text-[9px] font-black text-stone-300 uppercase tracking-widest leading-none">
-                      End-to-End Privacy
-                    </span>
-                  </div>
-                  <div className="w-1.5 h-1.5 bg-green-500/40 rounded-full"></div>
-                  <span className="text-[9px] font-black text-green-400 uppercase tracking-widest leading-none">
-                    Sync Status: OK
-                  </span>
-                </div>
-              </div>
-              
-              <div className="ml-4 bg-stone-800 p-4 rounded-2xl text-stone-500 group-hover:text-green-400 transition-all duration-500 group-hover:bg-stone-700 border border-white/5">
-                <Database size={22} />
-              </div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-4 gap-16 relative z-10 pt-12">
             <div className="col-span-1 md:col-span-2">
               <span className="font-extrabold text-4xl tracking-tighter text-white block mb-8">
