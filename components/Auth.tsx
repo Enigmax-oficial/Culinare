@@ -34,19 +34,29 @@ export const Auth: React.FC<AuthProps> = ({ onClose, onLoginSuccess }) => {
       setLoading(true);
       setError('');
       try {
-        const base64Url = response.credential.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-        const payload = JSON.parse(jsonPayload);
-        const { email: gEmail, name: gName } = payload;
-        
-        let user = await api.login(gEmail);
-        if (!user) {
-          user = await api.createUser(gName || 'Chef Gourmet', gEmail, 'google');
+        // Enviar token para o backend para validação
+        const verifyResponse = await fetch('http://localhost:3001/api/auth/verify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: response.credential })
+        });
+
+        if (!verifyResponse.ok) {
+          throw new Error('Falha na verificação do token');
         }
-        onLoginSuccess(user);
+
+        const { user } = await verifyResponse.json();
+        
+        // Atualizar usuário no banco local
+        let localUser = await api.login(user.email);
+        if (!localUser) {
+          localUser = await api.createUser(user.name, user.email, 'google');
+        }
+        
+        onLoginSuccess(localUser);
       } catch (err) {
-        setError("Erro ao autenticar com Google. Tente via e-mail.");
+        console.error(err);
+        setError("Erro ao autenticar com Google. Verifique sua conexão.");
       } finally {
         setLoading(false);
       }

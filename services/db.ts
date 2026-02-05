@@ -67,6 +67,108 @@ class SQLBackend {
                { title: "Bater", text: "Bata o açaí congelado com metade da banana até ficar cremoso." },
                { title: "Montar", text: "Coloque em um bowl e cubra com o restante das frutas e granola." }
              ]
+          },
+          {
+            id: '3',
+            title: "Pasta à Carbonara Autêntica",
+            description: "Receita italiana tradicional com ovos, bacon e queijo.",
+            rating: 4.8,
+            reviews: 156,
+            prepTime: 10,
+            cookTime: 20,
+            calories: 520,
+            difficulty: "Médio",
+            category: "Almoço/Jantar",
+            image: "https://images.unsplash.com/photo-1612874742237-6526221fcf4f?auto=format&fit=crop&w=1000&q=80",
+            tags: ["Italiana", "Almoço", "Massa"],
+            ingredients: [
+              { name: "Macarrão", amount: 400, unit: "g" },
+              { name: "Bacon", amount: 200, unit: "g" },
+              { name: "Ovos", amount: 2, unit: "unidades" },
+              { name: "Queijo parmesão", amount: 100, unit: "g" }
+            ],
+            steps: [
+              { title: "Cozinhar", text: "Cozinhe o macarrão em água salgada." },
+              { title: "Preparar bacon", text: "Frite o bacon até ficar crocante." },
+              { title: "Misturar", text: "Misture o macarrão quente com os ovos batidos e o bacon." }
+            ]
+          },
+          {
+            id: '4',
+            title: "Salmão Grelhado com Limão",
+            description: "Prato elegante e saudável, rico em ômega 3.",
+            rating: 4.9,
+            reviews: 203,
+            prepTime: 15,
+            cookTime: 25,
+            calories: 450,
+            difficulty: "Médio",
+            category: "Almoço/Jantar",
+            image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1000&q=80",
+            tags: ["Peixe", "Saudável", "Gourmet"],
+            ingredients: [
+              { name: "Filé de salmão", amount: 500, unit: "g" },
+              { name: "Limão", amount: 2, unit: "unidades" },
+              { name: "Azeite", amount: 3, unit: "colheres (sopa)" },
+              { name: "Sal e pimenta", amount: 1, unit: "a gosto" }
+            ],
+            steps: [
+              { title: "Preparar", text: "Tempere o salmão com sal, pimenta e limão." },
+              { title: "Grelhar", text: "Grelhe em fogo alto por 12-15 minutos de cada lado." },
+              { title: "Servir", text: "decore com rodelas de limão frescos." }
+            ]
+          },
+          {
+            id: '5',
+            title: "Chocolate Quente Cremoso",
+            description: "Bebida perfeita para os dias frios.",
+            rating: 4.6,
+            reviews: 92,
+            prepTime: 5,
+            cookTime: 10,
+            calories: 280,
+            difficulty: "Muito Fácil",
+            category: "Bebidas",
+            image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1000&q=80",
+            tags: ["Quente", "Doce", "Café da Manhã"],
+            ingredients: [
+              { name: "Leite integral", amount: 1, unit: "xícara" },
+              { name: "Chocolate em pó", amount: 2, unit: "colheres (sopa)" },
+              { name: "Açúcar refinado", amount: 1, unit: "colher (sopa)" },
+              { name: "Malte em pó (opcional)", amount: 1, unit: "colher (sopa)" }
+            ],
+            steps: [
+              { title: "Aquecer", text: "Despeje o leite em uma panela e aqueça." },
+              { title: "Misturar", text: "Adicione o chocolate em pó e mexa bem." },
+              { title: "Servir", text: "Despeje em xícara e sirva quente." }
+            ]
+          },
+          {
+            id: '6',
+            title: "Risoto de Cogumelos",
+            description: "Prato cremoso e sofisticado.",
+            rating: 4.8,
+            reviews: 134,
+            prepTime: 20,
+            cookTime: 30,
+            calories: 480,
+            difficulty: "Médio",
+            category: "Almoço/Jantar",
+            image: "https://images.unsplash.com/photo-1574080526500-b54688d2ff25?auto=format&fit=crop&w=1000&q=80",
+            tags: ["Italiana", "Vegetariano"],
+            ingredients: [
+              { name: "Arroz arbório", amount: 300, unit: "g" },
+              { name: "Cogumelos frescos", amount: 300, unit: "g" },
+              { name: "Vinho branco seco", amount: 1, unit: "xícara" },
+              { name: "Caldo vegetais", amount: 4, unit: "xícaras" },
+              { name: "Queijo parmesão", amount: 50, unit: "g" }
+            ],
+            steps: [
+              { title: "Preparar", text: "Refogue cebola e alho. Adicione os cogumelos cortados." },
+              { title: "Cozinhar arroz", text: "Adicione o arroz e mexa por 2 minutos." },
+              { title: "Adicionar líquido", text: "Despeje o vinho e vá adicionando caldo quente aos poucos, mexendo sempre." },
+              { title: "Finalizar", text: "Quando o arroz estiver cremoso, retire do fogo e adicione queijo." }
+            ]
           }
         ],
         shoppingList: {}
