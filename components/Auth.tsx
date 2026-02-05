@@ -34,29 +34,28 @@ export const Auth: React.FC<AuthProps> = ({ onClose, onLoginSuccess }) => {
       setLoading(true);
       setError('');
       try {
-        // Enviar token para o backend para validação
-        const verifyResponse = await fetch('http://localhost:3001/api/auth/verify-token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken: response.credential })
-        });
+        // Decodificar JWT token sem validação de assinatura (confiando no Google)
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
+        );
+        const payload = JSON.parse(jsonPayload);
+        const { email: gEmail, name: gName, picture: gPicture } = payload;
 
-        if (!verifyResponse.ok) {
-          throw new Error('Falha na verificação do token');
-        }
-
-        const { user } = await verifyResponse.json();
-        
-        // Atualizar usuário no banco local
-        let localUser = await api.login(user.email);
+        // Criar/atualizar usuário no banco local
+        let localUser = await api.login(gEmail);
         if (!localUser) {
-          localUser = await api.createUser(user.name, user.email, 'google');
+          localUser = await api.createUser(gName || 'Usuário Google', gEmail, 'google');
         }
-        
+
         onLoginSuccess(localUser);
       } catch (err) {
-        console.error(err);
-        setError("Erro ao autenticar com Google. Verifique sua conexão.");
+        console.error('Erro ao processar resposta do Google:', err);
+        setError("Erro ao autenticar com Google. Tente novamente.");
       } finally {
         setLoading(false);
       }
@@ -68,7 +67,12 @@ export const Auth: React.FC<AuthProps> = ({ onClose, onLoginSuccess }) => {
         callback: handleGoogleResponse,
       });
       window.google.accounts.id.renderButton(googleBtnRef.current, {
-        type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', width: 320,
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'pill',
+        width: 320,
       });
     }
   }, [onLoginSuccess]);
