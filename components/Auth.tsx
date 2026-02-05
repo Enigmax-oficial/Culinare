@@ -115,7 +115,7 @@ export const Auth: React.FC<AuthProps> = ({ onClose, onLoginSuccess }) => {
           </div>
 
           <div className="space-y-6 flex flex-col items-center">
-            <div ref={googleBtnRef} className="w-full flex justify-center min-h-[50px]"></div>
+            <div ref={googleBtnRef} className="w-full flex justify-center min-h-[60px] scale-110 origin-top"></div>
 
             <button type="button" className="w-full max-w-[320px] flex items-center justify-center gap-3 py-4 bg-stone-900 rounded-full hover:bg-black transition-all font-black text-xs text-white shadow-xl active:scale-95">
               <AppleIcon /> <span>Continuar com Apple</span>

@@ -48,6 +48,19 @@ export default function App() {
           console.error("Falha ao recuperar sessão local");
         }
       }
+      
+      // Verificar URL hash para navegação
+      const hash = window.location.hash;
+      if (hash.startsWith('#recipe/')) {
+        const recipeId = hash.substring(8);
+        setSelectedRecipeId(recipeId);
+        setView('recipe');
+      } else if (hash === '#profile') {
+        setView('profile');
+      } else if (hash === '#playlists') {
+        setView('playlists');
+      }
+      
       setLoading(false);
     };
     init();
@@ -56,6 +69,7 @@ export default function App() {
   const handleFilter = (cat: string | null) => {
     setActiveCategory(cat);
     setView('home');
+    window.location.hash = '';
     if (!cat) {
       setFilteredRecipes(recipes);
     } else if (cat === 'popular') {
@@ -68,6 +82,7 @@ export default function App() {
   const handleSelectRecipe = (id: string) => {
     setSelectedRecipeId(id);
     setView('recipe');
+    window.location.hash = `recipe/${id}`;
     window.scrollTo(0, 0);
   };
 
