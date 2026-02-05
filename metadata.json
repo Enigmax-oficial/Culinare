@@ -1,0 +1,5 @@
+{
+  "name": "ChefEmCasa",
+  "description": "A full-featured recipe management platform with user accounts, persistence, and AI-powered cooking assistance.",
+  "requestFramePermissions": []
+}

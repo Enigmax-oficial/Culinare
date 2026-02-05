@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ChefEmCasa Pro - Redirecionando...</title>
+    <script type="text/javascript">
+      // Redirecionamento Universal para GitHub Pages SPA
+      var l = window.location;
+      
+      // Detecção de Repositório (Enigmax-oficial/Culinare)
+      // Se estiver em um subdiretório (github.io/repo/), mantém o primeiro segmento.
+      var isGitHubPages = l.hostname.includes('github.io');
+      var pathSegments = l.pathname.split('/').filter(Boolean);
+      var pathSegmentsToKeep = (isGitHubPages && pathSegments.length > 0) ? 1 : 0;
+      
+      var repoBase = l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/');
+      if (repoBase && !repoBase.startsWith('/')) repoBase = '/' + repoBase;
+      
+      var targetUrl = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        repoBase + '/?p=/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash;
+
+      l.replace(targetUrl);
+    </script>
+  </head>
+  <body>
+    <div style="font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; color: #444;">
+      <h1 style="font-weight: 900; letter-spacing: -0.05em; margin-bottom: 10px;">ChefEmCasa Pro</h1>
+      <p style="font-size: 14px; opacity: 0.6; text-transform: uppercase; font-weight: 800; letter-spacing: 0.2em;">Redirecionando sua cozinha...</p>
+    </div>
+  </body>
+</html>

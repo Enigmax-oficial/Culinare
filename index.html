@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChefEmCasa Pro - Gastronomia Local-First</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f5f5f4; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+        
+        .animate-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+<script type="text/javascript">
+  // GitHub Pages SPA Redirect Handler
+  (function(l) {
+    if (l.search[1] === 'p') {
+      var decoded = l.search.slice(1).split('&').map(function(s) { 
+        return s.replace(/~and~/g, '&') 
+      }).filter(function(s) {
+        return s.slice(0, 2) === 'p='
+      })[0];
+      if (decoded) {
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded.slice(2) +
+          (l.search.slice(1).split('&').filter(function(s) { return s.slice(0, 2) !== 'p=' }).length > 0 ? '?' + l.search.slice(1).split('&').filter(function(s) { return s.slice(0, 2) !== 'p=' }).join('&').replace(/~and~/g, '&') : '') +
+          l.hash
+        );
+      }
+    }
+  }(window.location))
+</script>
+</head>
+<body class="bg-stone-50 text-stone-900">
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+</body>
+</html>
