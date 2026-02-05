@@ -54,7 +54,7 @@ export const Auth: React.FC<AuthProps> = ({ onClose, onLoginSuccess }) => {
 
     if (window.google && googleBtnRef.current) {
       window.google.accounts.id.initialize({
-        client_id: "415793717407-mystical-app-486213-p4.apps.googleusercontent.com",
+        client_id: "309962205395-c36qhp6n9qold6kcd5ii3d4t3q04qvt9.apps.googleusercontent.com",
         callback: handleGoogleResponse,
       });
       window.google.accounts.id.renderButton(googleBtnRef.current, {
