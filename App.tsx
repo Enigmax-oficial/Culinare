@@ -30,12 +30,10 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Função para sincronizar hash com estado
-  const syncHashWithView = useCallback((hash: string = window.location.hash, recipesData?: Recipe[]) => {
-    const data = recipesData || recipes;
-    
+  const syncHashWithView = (hash: string = window.location.hash, recipesData: Recipe[]) => {
     if (hash.startsWith('#recipe/')) {
       const recipeId = hash.substring(8);
-      const recipeExists = data.some(r => r.id === recipeId);
+      const recipeExists = recipesData.some(r => r.id === recipeId);
       if (!recipeExists) {
         console.warn(`Receita ${recipeId} não encontrada`);
         setView('home');
@@ -55,7 +53,7 @@ export default function App() {
       setView('home');
       setSelectedRecipeId(null);
     }
-  }, [recipes]);
+  };
 
   // Carregar dados no init
   useEffect(() => {
@@ -75,15 +73,16 @@ export default function App() {
         }
         
         // Sincronizar com hash atual após carregar dados
-        syncHashWithView(window.location.hash, data);
+        const hash = window.location.hash;
+        syncHashWithView(hash, data);
         setLoading(false);
       } catch (e) {
-        console.error(e);
+        console.error('Erro ao carregar dados:', e);
         setLoading(false);
       }
     };
     load();
-  }, [syncHashWithView]);
+  }, []);
 
   // Listener para mudanças de hash
   useEffect(() => {
