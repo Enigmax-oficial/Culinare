@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { api } from './services/api';
 import { Recipe, User } from './types';
@@ -29,6 +29,34 @@ export default function App() {
   const [submittingRecipe, setSubmittingRecipe] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
+  // Função para sincronizar hash com estado
+  const syncHashWithView = useCallback((hash: string = window.location.hash, recipesData?: Recipe[]) => {
+    const data = recipesData || recipes;
+    
+    if (hash.startsWith('#recipe/')) {
+      const recipeId = hash.substring(8);
+      const recipeExists = data.some(r => r.id === recipeId);
+      if (!recipeExists) {
+        console.warn(`Receita ${recipeId} não encontrada`);
+        setView('home');
+        setSelectedRecipeId(null);
+        window.location.hash = '';
+        return;
+      }
+      setSelectedRecipeId(recipeId);
+      setView('recipe');
+    } else if (hash === '#profile') {
+      setView('profile');
+      setSelectedRecipeId(null);
+    } else if (hash === '#playlists') {
+      setView('playlists');
+      setSelectedRecipeId(null);
+    } else {
+      setView('home');
+      setSelectedRecipeId(null);
+    }
+  }, [recipes]);
+
   // Carregar dados no init
   useEffect(() => {
     const load = async () => {
@@ -36,36 +64,57 @@ export default function App() {
         const data = await api.getRecipes();
         setRecipes(data);
         setFilteredRecipes(data);
+        
+        const userStr = localStorage.getItem('chef_current_user_v2');
+        if (userStr) {
+          try {
+            setUser(JSON.parse(userStr));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        
+        // Sincronizar com hash atual após carregar dados
+        syncHashWithView(window.location.hash, data);
+        setLoading(false);
       } catch (e) {
         console.error(e);
+        setLoading(false);
       }
-      const userStr = localStorage.getItem('chef_current_user_v2');
-      if (userStr) {
-        try {
-          setUser(JSON.parse(userStr));
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      setLoading(false);
     };
     load();
-  }, []);
+  }, [syncHashWithView]);
+
+  // Listener para mudanças de hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      syncHashWithView();
+      window.scrollTo(0, 0);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [syncHashWithView]);
 
   const handleSelectRecipe = (id: string) => {
-    setSelectedRecipeId(id);
-    setView('recipe');
-    window.scrollTo(0, 0);
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      window.location.hash = `recipe/${id}`;
+    } else {
+      console.warn(`Receita ${id} não encontrada`);
+    }
   };
 
   const handleBackHome = () => {
-    setView('home');
-    setSelectedRecipeId(null);
+    window.location.hash = '';
     window.scrollTo(0, 0);
   };
 
   const handleFilter = (cat: string | null) => {
     setActiveCategory(cat);
+    window.location.hash = '';
+    window.scrollTo(0, 0);
+    
     if (!cat) {
       setFilteredRecipes(recipes);
     } else if (cat === 'popular') {
@@ -84,7 +133,8 @@ export default function App() {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('chef_current_user_v2');
-    handleBackHome();
+    window.location.hash = '';
+    setView('home');
   };
 
   const handleSaveRecipe = async (recipe: Partial<Recipe>) => {
@@ -127,9 +177,13 @@ export default function App() {
         onOpenCreate={user ? () => setIsCreateOpen(true) : () => setIsAuthOpen(true)}
         activeView={view}
         onNavigate={(v) => {
-          if (v === 'home') handleBackHome();
-          else if (v === 'profile') setView('profile');
-          else if (v === 'playlists') setView('playlists');
+          if (v === 'home') {
+            window.location.hash = '';
+          } else if (v === 'profile') {
+            window.location.hash = 'profile';
+          } else if (v === 'playlists') {
+            window.location.hash = 'playlists';
+          }
           window.scrollTo(0, 0);
         }}
         onFilterCategory={handleFilter}
