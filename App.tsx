@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { api } from './services/api';
 import { Recipe, User } from './types';
@@ -33,44 +33,62 @@ export default function App() {
   const [submittingRecipe, setSubmittingRecipe] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  // Função para sincronizar hash com estado
-  const syncHashWithView = (hash: string = window.location.hash) => {
+  // Função para sincronizar hash com estado - usa useCallback para ter acesso aos recipes
+  const syncHashWithView = useCallback((hash: string = window.location.hash, recipesData?: Recipe[]) => {
+    const data = recipesData || recipes;
+    
     if (hash.startsWith('#recipe/')) {
       const recipeId = hash.substring(8);
+      // Verificar se a receita existe
+      const recipeExists = data.some(r => r.id === recipeId);
+      if (!recipeExists) {
+        console.warn(`Recipe ${recipeId} not found`);
+        setView('home');
+        setSelectedRecipeId(null);
+        window.location.hash = '';
+        return;
+      }
       setSelectedRecipeId(recipeId);
       setView('recipe');
     } else if (hash === '#profile') {
       setView('profile');
+      setSelectedRecipeId(null);
     } else if (hash === '#playlists') {
       setView('playlists');
+      setSelectedRecipeId(null);
     } else {
       setView('home');
       setSelectedRecipeId(null);
     }
-  };
+  }, [recipes]);
 
   useEffect(() => {
     const init = async () => {
-      const data = await api.getRecipes();
-      setRecipes(data);
-      setFilteredRecipes(data);
-      
-      const storedUserStr = localStorage.getItem('chef_current_user_v2');
-      if (storedUserStr) {
-        try {
-          const storedUser = JSON.parse(storedUserStr);
-          setUser(storedUser);
-        } catch (e) {
-          console.error("Falha ao recuperar sessão local");
+      try {
+        const data = await api.getRecipes();
+        setRecipes(data);
+        setFilteredRecipes(data);
+        
+        const storedUserStr = localStorage.getItem('chef_current_user_v2');
+        if (storedUserStr) {
+          try {
+            const storedUser = JSON.parse(storedUserStr);
+            setUser(storedUser);
+          } catch (e) {
+            console.error("Falha ao recuperar sessão local");
+          }
         }
+        
+        // Sincronizar com hash atual passando os dados carregados
+        syncHashWithView(window.location.hash, data);
+        setLoading(false);
+      } catch (e) {
+        console.error("Erro ao carregar receitas:", e);
+        setLoading(false);
       }
-      
-      // Sincronizar com hash atual
-      syncHashWithView();
-      setLoading(false);
     };
     init();
-  }, []);
+  }, [syncHashWithView]);
 
   // Listener para mudanças de hash
   useEffect(() => {
@@ -81,12 +99,21 @@ export default function App() {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [syncHashWithView]);
+
+  // Sincronizar filteredRecipes quando voltamos pra home
+  useEffect(() => {
+    if (view === 'home' && activeCategory === null) {
+      setFilteredRecipes(recipes);
+    }
+  }, [view, recipes, activeCategory]);
 
   const handleFilter = (cat: string | null) => {
     setActiveCategory(cat);
     setSelectedRecipeId(null);
+    setView('home');
     window.location.hash = '';
+    
     if (!cat) {
       setFilteredRecipes(recipes);
     } else if (cat === 'popular') {
@@ -97,7 +124,13 @@ export default function App() {
   };
 
   const handleSelectRecipe = (id: string) => {
-    window.location.hash = `recipe/${id}`;
+    // Verificar se a receita existe antes de navegar
+    const recipe = recipes.find(r => r.id === id);
+    if (recipe) {
+      window.location.hash = `recipe/${id}`;
+    } else {
+      console.warn(`Recipe ${id} not found`);
+    }
   };
 
   const handleLoginSuccess = (newUser: User) => {
