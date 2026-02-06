@@ -33,14 +33,14 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onOpenAuth, onLogout, onOp
           </div>
           
           <div className="hidden md:flex items-center space-x-8 text-stone-500 font-bold text-sm uppercase tracking-wide">
-            <button onClick={() => { onNavigate('home'); onFilterCategory?.(null); window.location.hash = ''; }} className={`hover:text-orange-500 transition ${activeView === 'home' ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>Início</button>
-            <button onClick={() => { onNavigate('playlists'); window.location.hash = '#playlists'; }} className={`hover:text-orange-500 transition ${activeView === 'playlists' ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>Salvos</button>
+            <button onClick={() => { onNavigate('home'); onFilterCategory?.(null); }} className={`hover:text-orange-500 transition ${activeView === 'home' ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>Início</button>
+            <button onClick={() => { onNavigate('playlists'); }} className={`hover:text-orange-500 transition ${activeView === 'playlists' ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>Salvos</button>
             <div className="relative group/cat">
               <button className="hover:text-orange-500 transition">Categorias</button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 hidden group-hover/cat:block">
                 <div className="bg-white border border-stone-100 shadow-2xl rounded-2xl p-4 min-w-[200px] grid grid-cols-1 gap-2">
                   {categories.map(c => (
-                    <button key={c} onClick={() => { onNavigate('home'); onFilterCategory?.(c); window.location.hash = ''; }} className="text-left px-4 py-2 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors whitespace-nowrap">
+                    <button key={c} onClick={() => { onNavigate('home'); onFilterCategory?.(c); }} className="text-left px-4 py-2 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors whitespace-nowrap">
                       {c}
                     </button>
                   ))}
@@ -87,13 +87,13 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onOpenAuth, onLogout, onOp
                       </div>
                       <div className="p-2">
                         <button 
-                          onClick={() => { onNavigate('profile'); window.location.hash = '#profile'; }}
+                          onClick={() => onNavigate('profile')}
                           className="flex items-center gap-3 w-full px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 hover:text-orange-600 rounded-2xl transition-all font-bold"
                         >
                           <Settings size={16} /> Perfil do Chef
                         </button>
                         <button 
-                          onClick={() => { onNavigate('playlists'); window.location.hash = '#playlists'; }}
+                          onClick={() => onNavigate('playlists')}
                           className="flex items-center gap-3 w-full px-4 py-3 text-sm text-stone-600 hover:bg-orange-50 hover:text-orange-600 rounded-2xl transition-all font-bold"
                         >
                           <Heart size={16} /> Playlists
